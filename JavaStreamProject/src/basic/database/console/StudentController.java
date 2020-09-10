@@ -31,12 +31,11 @@ public class StudentController implements Initializable {
 	Connection conn = ConnectionDB.getDB();
 	@FXML
 	TableView<Student> tableView;
-	
 	@FXML
 	Button pepleAdd, loginBtn;
 	
 	ObservableList<Student> list;
-	
+	ObservableList<login> list2;
 	Stage primaryStage;
 
 	public void setPrimaryStage(Stage primaryStage) {
@@ -48,17 +47,25 @@ public class StudentController implements Initializable {
 		
 		list = FXCollections.observableArrayList();
 		//회원가입 버튼(pepleAdd) 눌렀을 경우 이벤트 정의
-		loginBtn.setOnAction(event ->{
-			Stage stage = new Stage(StageStyle.UTILITY);
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.initOwner(primaryStage);
-			try {
-				
-			}catch {
-				
-			};
-			
 		
+		loginBtn.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				
+				//리스트하고 이정은이 해야될꺼 - Login();
+			
+				
+		 }
+		});
+//		loginBtn.setOnAction(E->{
+//			Stage st = new Stage(StageStyle.UTILITY);
+//			st.initModality(Modality.WINDOW_MODAL);
+//			st.initOwner(primaryStage);
+//			
+//			});
+//			
+	
 		
 		pepleAdd.setOnAction(event ->{
 			Stage stage = new Stage(StageStyle.UTILITY);
@@ -101,7 +108,7 @@ public class StudentController implements Initializable {
 				e.printStackTrace();
 			}			
 		});  //end 회원가입
-		
+			
 //		Popup popup = new Popup();
 //		Parent parent = FXMLLoader.load(getClass().getResource("popup.fxml"));
 //		 HBox root = loader.load();
@@ -111,20 +118,20 @@ public class StudentController implements Initializable {
 		
 		
 	}//end init
-	
+		
 	
 	public void insertStudent(Student stu) {
-		String sql = "insert into DONGSCHOOL(id, password, name, phone, email)"
-				+" values(" + stu.getId()
-				+ ", \'" + stu.getPassword() 
-				+ "\',\' " + stu.getName() 
-				+ "\',\' " + stu.getPhone() 
-				+ "\',\' " + stu.getEmail() 
-				+ "\' )";
-		System.out.println(sql);
+		String sql = "insert into DONGSCHOOL values(?,?,?,?,?)";
+			System.out.println(sql);
 		
 		try {
 			PreparedStatement psmt = conn.prepareStatement(sql);
+			psmt.setString(1, stu.getId());
+			psmt.setString(2, stu.getPassword());
+			psmt.setString(3, stu.getName());
+			psmt.setString(4, stu.getPhone());
+			psmt.setString(5, stu.getEmail());
+			
 			int r = psmt.executeUpdate();
 			System.out.println(r + "건 입력되었습니다.");
 		} catch (SQLException e) {
@@ -134,17 +141,18 @@ public class StudentController implements Initializable {
 	
 	public void Login(Student stu) throws Exception{
 		if(stu.getId().equals("id") && stu.getPassword().equals("password")) {
+			loginBtn.setText("Login success");
 			Stage primaryStage = new Stage();
 			Parent login = FXMLLoader.load(getClass().getResource("login.fxml"));
 			Scene scene = new Scene(login);
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
+		
 		}
 //		} else {
 //			setText("Login Failed");
 //		}
 	}
-	
+		
 	
 }

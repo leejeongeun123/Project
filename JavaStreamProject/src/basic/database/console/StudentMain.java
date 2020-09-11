@@ -10,7 +10,7 @@ public class StudentMain extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("AnchorRoot.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
 		AnchorPane anchor = loader.load();
 		
 		Scene scene = new Scene(anchor);

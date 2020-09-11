@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
@@ -20,22 +21,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class StudentController implements Initializable {
 	Connection conn = ConnectionDB.getDB();
-	@FXML
-	TableView<Student> tableView;
-	@FXML
-	Button pepleAdd, loginBtn;
+	@FXML TableView<Student> tableView;
+	//loginBtn=로그인 버튼
+	@FXML Button pepleAdd, loginBtn;
+	@FXML TextField txtId;
+	@FXML PasswordField txtPwd;
 	
 	ObservableList<Student> list;
-	ObservableList<login> list2;
+	ObservableList<Student> mlist;
 	Stage primaryStage;
 
 	public void setPrimaryStage(Stage primaryStage) {
@@ -46,25 +45,43 @@ public class StudentController implements Initializable {
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		list = FXCollections.observableArrayList();
+		mlist = FXCollections.observableArrayList();
 		//회원가입 버튼(pepleAdd) 눌렀을 경우 이벤트 정의
 		
+		
+		//아이디,비번 입력후 로그인 버튼 눌렀을 경우 이벤트 정의
 		loginBtn.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent event) {
 				
-				//리스트하고 이정은이 해야될꺼 - Login();
+				mlist = getMemberList();
+				
+				for(int i=0; i<mlist.size(); i++) {//start for1
+					if(mlist.get(i).getId().equals(txtId.getText()) && mlist.get(i).getPassword().equals(txtPwd.getText())) {//start if1
+						System.out.println("접속되었습니다.");
+						Stage stage = new Stage(StageStyle.UTILITY);
+						stage.initModality(Modality.WINDOW_MODAL);
+						stage.initOwner(primaryStage);
+						try {
+							Parent parent= FXMLLoader.load(getClass().getResource("list.fxml"));
+							Scene s = new Scene(parent);
+							stage.setScene(s);
+							stage.show();
+							
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						break;
+					}	//end if1		
+				}//end for1
 			
 				
 		 }
+			
 		});
-//		loginBtn.setOnAction(E->{
-//			Stage st = new Stage(StageStyle.UTILITY);
-//			st.initModality(Modality.WINDOW_MODAL);
-//			st.initOwner(primaryStage);
-//			
-//			});
-//			
+	
 	
 		
 		pepleAdd.setOnAction(event ->{
@@ -107,18 +124,31 @@ public class StudentController implements Initializable {
 				
 				e.printStackTrace();
 			}			
-		});  //end 회원가입
-			
-//		Popup popup = new Popup();
-//		Parent parent = FXMLLoader.load(getClass().getResource("popup.fxml"));
-//		 HBox root = loader.load();
-//		ImageView imageview = (ImageView) parent.lookup("#imgMessage");
-//		imageview.setImage(new Image(getClass().getResource(null).
-				
-		
-		
+		});  //end 회원가입	
 	}//end init
+	
+	//회원 테이블 조회
+	private ObservableList<Student> getMemberList() {
+		String sql = "select * "
+				+ "\n"+"from dongschool";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			ResultSet rs=pstmt.executeQuery();
+			while(rs.next()) {
+				Student stu = new Student(rs.getString("id"), 
+										  rs.getString("password"),
+										  rs.getString("name"),
+										  rs.getString("phone"),
+										  rs.getString("email"));
+			
+				list.add(stu);	
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 		
+	}	
 	
 	public void insertStudent(Student stu) {
 		String sql = "insert into DONGSCHOOL values(?,?,?,?,?)";
@@ -139,20 +169,7 @@ public class StudentController implements Initializable {
 		}
 	}
 	
-	public void Login(Student stu) throws Exception{
-		if(stu.getId().equals("id") && stu.getPassword().equals("password")) {
-			loginBtn.setText("Login success");
-			Stage primaryStage = new Stage();
-			Parent login = FXMLLoader.load(getClass().getResource("login.fxml"));
-			Scene scene = new Scene(login);
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		
-		}
-//		} else {
-//			setText("Login Failed");
-//		}
-	}
+	
 		
 	
 }

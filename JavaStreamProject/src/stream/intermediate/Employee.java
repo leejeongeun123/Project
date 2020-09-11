@@ -71,6 +71,11 @@ public class Employee {
 		return employees;
 	}
 
+	public int getSalary() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
 		
 	}
